@@ -1,14 +1,6 @@
 import React,{useEffect, useState } from 'react'
 import './styles.module.css'
 
-interface Props {
-  text: string
-}
-
-export const ExampleComponent = ({ text }: Props) => {
-  return <div className={''}>Example Component: {text}</div>
-}
-
 interface IFileUploaerProps {
  /** Drag and Drop information label text  */
   information: string,
@@ -155,7 +147,7 @@ const handleDrop = (e: any)  => {
    
   const isFileImage =  file && file['type'].split('/')[0] === 'image';
     if (!isFileImage) return;
-    
+
   let reader = new FileReader()
   reader.readAsDataURL(file)
   reader.onloadend = function() {
