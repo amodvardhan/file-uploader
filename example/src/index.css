@@ -14,7 +14,7 @@ code {
 } */
 
 /* add css module styles here (optional) */
-/* #drop-area {
+#drop-area {
   border: 2px dashed #ccc;
   border-radius: 20px;
   width: 480px;
@@ -34,11 +34,12 @@ p {
 #gallery {
   margin-top: 10px;
 }
-#gallery img {
+#gallery embed {
   width: 150px;
   margin-bottom: 10px;
   margin-right: 10px;
   vertical-align: middle;
+  object-fit: contain;
 }
 .button {
   display: inline-block;
@@ -53,4 +54,4 @@ p {
 }
 #fileElem {
   display: none;
-} */
+}

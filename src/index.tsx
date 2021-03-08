@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./styles.module.css";
 
 interface IFileUploaerProps {
@@ -18,8 +18,14 @@ interface IFileUploaerProps {
   /** If enabled uploaded files show progress */
   enableProgress?: boolean;
 
+  /**  remove icon which will be used to show on each preview */
+  removeIcon: string;
+
   /** Once all the files are upload it update the caller with Array<ArrayBuffer> */
-  onFileUpload: (filesInByteArray: Array<ArrayBuffer>) => void;
+  onUploadFinish: (files: FileList) => void;
+
+  /** Triggers when file is removed */
+  onFileDelete: (file: File) => void;
 }
 /** File uploader with drag and drop events */
 function FileUploader(props: IFileUploaerProps) {
@@ -31,15 +37,13 @@ function FileUploader(props: IFileUploaerProps) {
     IconComponent,
     enablePreview,
     enableProgress,
-    onFileUpload,
+    onUploadFinish,
   } = props;
   // global variables
   let dropArea: any;
   let progressBar: any;
   let uploadProgress: number[] = [];
   let totalFiles: number = 0;
-
-  const [[], setFileArray] = useState<Array<ArrayBuffer>>([]);
 
   useEffect(() => {
     console.log("here");
@@ -115,58 +119,45 @@ function FileUploader(props: IFileUploaerProps) {
     handleFiles(files);
   };
 
-  const handleFiles = (files: any) => {
-    //files = [...files];
+  const handleFiles = (files: FileList) => {
     totalFiles = files.length;
 
-    initializeProgress(files.length);
-    let counter = 0;
-    for (let index = 0; index < totalFiles; index++) {
-      uploadFile(files[index], ++counter);
-      previewFile(files[index]);
+    // if enable progress is set to true then only proceed
+    enableProgress && initializeProgress(files.length);
+
+    for (let index = 0; index <= totalFiles; ++index) {
+      enableProgress && updateProgress(index);
+      enablePreview && previewFile(files[index]);
     }
+
+    // finish the file upload and update parent component
+    onUploadFinish(files);
   };
 
+  // triggers whenever user upload the files through upload button
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files: any = e.target.files;
-    totalFiles = files ? files.length : 0;
-    let counter = 0;
-    for (let index = 0; index < totalFiles; index++) {
-      uploadFile(files[index], ++counter);
-      previewFile(files[index]);
-    }
-  };
-
-  // trigges when files are being uploaded
-  const uploadFile = (file: File, index: number) => {
-    const xhr = new XMLHttpRequest();
-
-    xhr.upload.addEventListener("progress", (e) => {
-      updateProgress(index, (e.loaded * 100.0) / e.total || 100);
-    });
-
-    convertToByteArray(file).then((arr: ArrayBuffer) => {
-      let array: Array<ArrayBuffer> = [];
-
-      setFileArray((prevState) => {
-        array = [...prevState, arr];
-        return array;
-      });
-
-      if (index === totalFiles) {
-        onFileUpload(array);
-      }
-    });
+    handleFiles(e.target.files as FileList);
   };
 
   // show the uploaded files as a preview
-  const previewFile = (file: any) => {
-    let reader = new FileReader();
+  const previewFile = (file: File) => {
+    const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = function () {
-      const img = document.createElement("img");
-      img.src = reader.result as string;
-      document.getElementById("gallery")?.appendChild(img);
+      // const wrapper = document.createElement("div");
+      // const close = document.createElement("span");
+
+      // close.classList.add(removeIcon);
+      // wrapper.classList.add("preview_wraper");
+
+      const element = document.createElement("embed");
+      element.src = reader.result as string;
+
+      // close.innerHTML = "X";
+      // close.click = () => onFileDelete(file);
+      // wrapper.appendChild(close);
+      // wrapper.appendChild(element);
+      document.getElementById("gallery")?.appendChild(element);
     };
   };
 
@@ -181,34 +172,19 @@ function FileUploader(props: IFileUploaerProps) {
   }
 
   // update the progress bar status
-  const updateProgress = (fileNumber: any, percent: any) => {
+  const updateProgress = (fileNumber: any) => {
+    const xhr = new XMLHttpRequest();
+    let percent: number = 0;
+    xhr.upload.addEventListener("progress", (e) => {
+      (percent = fileNumber), (e.loaded * 100.0) / e.total || 100;
+    });
+
     uploadProgress[fileNumber] = percent;
     let total =
       uploadProgress.reduce((tot, curr) => tot + curr, 0) /
       uploadProgress.length;
     progressBar.value = total;
   };
-
-  // A promise object which reads the file and converts it to the byte[]
-  const convertToByteArray = (file: File) =>
-    new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsArrayBuffer(file);
-
-      // make sure the file is in READY state, so that we can process the image file
-      fileReader.onload = function () {
-        const buffer = new Uint8Array(fileReader.result as ArrayBuffer);
-        let byteArray: any = [];
-        for (var i = 0; i < buffer.length; i++) {
-          byteArray.push(buffer[i]);
-        }
-        if (byteArray) {
-          resolve(byteArray);
-        } else {
-          reject([]);
-        }
-      };
-    });
 
   return (
     <div id="drop-area">

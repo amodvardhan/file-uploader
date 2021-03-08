@@ -12,11 +12,12 @@ const App = () => {
         buttonLabel="Select some files"
         multiple
         enablePreview
-        enableProgress
+        removeIcon="close"
         IconComponent={() => <strong>Icon Placeholer</strong>}
-        onFileUpload={(filesInArray: Array<ArrayBuffer>) => {
+        onUploadFinish={(filesInArray: FileList) => {
           return console.log(filesInArray);
         }}
+        onFileDelete={(file: File) => console.log(file, "file")}
       />
     </>
   );
