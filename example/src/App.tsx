@@ -12,12 +12,15 @@ const App = () => {
         buttonLabel="Select some files"
         multiple
         enablePreview
-        removeIcon="close"
+        removeIconClass=""
+        existingFiles={[]}
         IconComponent={() => <strong>Icon Placeholer</strong>}
         onUploadFinish={(filesInArray: FileList) => {
           return console.log(filesInArray);
         }}
-        onFileDelete={(file: File) => console.log(file, "file")}
+        onFileDelete={(remainingFiles: Array<File>) =>
+          console.log(remainingFiles, "file")
+        }
       />
     </>
   );

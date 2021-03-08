@@ -14,7 +14,7 @@ code {
 } */
 
 /* add css module styles here (optional) */
-#drop-area {
+.droparea {
   border: 2px dashed #ccc;
   border-radius: 20px;
   width: 480px;
@@ -33,9 +33,12 @@ p {
 }
 #gallery {
   margin-top: 10px;
+  position: relative;
+  display: flex;
 }
 #gallery embed {
   width: 150px;
+  height: 150px;
   margin-bottom: 10px;
   margin-right: 10px;
   vertical-align: middle;
@@ -54,4 +57,21 @@ p {
 }
 #fileElem {
   display: none;
+}
+
+#gallery div {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  padding: 10px;
+  display: inline-flex;
+}
+.close::before {
+  content: "X";
+  height: 15px;
+  width: 15px;
+  color: grey;
+  top: 0;
+  right: 0;
+  position: absolute;
 }
