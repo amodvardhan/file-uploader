@@ -24,8 +24,8 @@ interface IFileUploaerProps {
   /** Already added files as array of byte[] */
   existingFiles: Array<ArrayBuffer>;
 
-  /** Once all the files are upload it update the caller with Array<ArrayBuffer> */
-  onUploadFinish: (files: FileList) => void;
+  /** Once all the files are uploaded it update the caller with Array<ArrayBuffer> */
+  onUploadFinish: (files: Array<File>) => void;
 
   /** Triggers when file is removed */
   onFileDelete: (remainingFiles: Array<File>) => void;
@@ -55,7 +55,7 @@ function FileUploader(props: IFileUploaerProps) {
 
   // states
   const [filesByteArray, setFilesByteArray] = useState<Array<ArrayBuffer>>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<Array<File>>([]);
 
   useEffect(() => {
     dropArea = document.getElementById("drop-area");
@@ -129,27 +129,37 @@ function FileUploader(props: IFileUploaerProps) {
     const dt = e.dataTransfer;
     const files = dt.files;
 
-    handleFiles(files);
+    handleFiles(Array.from(files));
   };
 
-  const handleFiles = (files: FileList) => {
-    totalFiles = files.length;
+  const handleFiles = (uploadedFiles: Array<File>) => {
+    totalFiles = uploadedFiles.length;
+    const newFiles: Array<File> = [...uploadedFiles];
+
+    if (totalFiles === 0) return;
 
     // if enable progress is set to true then only proceed
-    enableProgress && initializeProgress(files.length);
-    for (let index = 0; index <= totalFiles; ++index) {
-      enableProgress && updateProgress(index);
-      enablePreview && previewFile(files[index]);
+    // enableProgress && initializeProgress(files.length);
+    // for (let index = 0; index <= totalFiles; ++index) {
+    //   enableProgress && updateProgress(index);
+    //   enablePreview && previewFile(files[index]);
+    // }
+
+    if (enableProgress) {
+      initializeProgress(files.length);
+      newFiles.forEach(updateProgress);
     }
 
+    enablePreview && newFiles.forEach(previewFile);
+
     // finish the file upload and update parent component
-    onUploadFinish(files);
-    setFiles(Array.from(files));
+    onUploadFinish(newFiles);
+    setFiles(newFiles);
   };
 
   // triggers whenever user upload the files through upload button
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files as FileList);
+    handleFiles(Array.from(e.target.files ? e.target.files : []));
   };
 
   // inititalize the progress bar
@@ -202,7 +212,7 @@ function FileUploader(props: IFileUploaerProps) {
 
   return (
     <div id="drop-area" className={styles.droparea}>
-      <div className="my-form">
+      <div className={styles.myform}>
         <div>{information}</div>
         <div style={{ textAlign: "center" }}>
           {IconComponent && <IconComponent />}
@@ -211,11 +221,12 @@ function FileUploader(props: IFileUploaerProps) {
           <input
             type="file"
             id="fileElem"
+            className={styles.fileElem}
             multiple={multiple}
             accept={fileType}
             onChange={onFileChange}
           />
-          <label className="button" htmlFor="fileElem">
+          <label className={styles.button} htmlFor="fileElem">
             {buttonLabel}
           </label>
         </div>
@@ -227,7 +238,7 @@ function FileUploader(props: IFileUploaerProps) {
       {enablePreview && filesByteArray.length > 0 && (
         <div id="gallery">
           {filesByteArray.map((file: ArrayBuffer, index: number) => (
-            <div key={`previw_${index}`}>
+            <div key={`preview_${index}`}>
               <span
                 className={removeIconClass ? removeIconClass : "close"}
                 onClick={() => onDelete(index)}
