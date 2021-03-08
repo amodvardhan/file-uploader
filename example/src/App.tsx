@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
-import FileUploader from '@amodv/react-file-uploader'
-import '@amodv/react-file-uploader/dist/index.css'
+import FileUploader from "@amodv/react-file-uploader";
+import "@amodv/react-file-uploader/dist/index.css";
 
 const App = () => {
   return (
@@ -14,12 +14,12 @@ const App = () => {
         enablePreview
         enableProgress
         IconComponent={() => <strong>Icon Placeholer</strong>}
-        onFileUpload={ (filesInArray: Array<ArrayBuffer>) => {
-          return console.log(filesInArray)
+        onFileUpload={(filesInArray: Array<ArrayBuffer>) => {
+          return console.log(filesInArray);
         }}
       />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

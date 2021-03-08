@@ -116,15 +116,15 @@ function FileUploader(props: IFileUploaerProps) {
   };
 
   const handleFiles = (files: any) => {
-    files = [...files];
+    //files = [...files];
     totalFiles = files.length;
 
     initializeProgress(files.length);
     let counter = 0;
     for (let index = 0; index < totalFiles; index++) {
       uploadFile(files[index], ++counter);
+      previewFile(files[index]);
     }
-    Array.from(files).forEach(previewFile);
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,8 +133,8 @@ function FileUploader(props: IFileUploaerProps) {
     let counter = 0;
     for (let index = 0; index < totalFiles; index++) {
       uploadFile(files[index], ++counter);
+      previewFile(files[index]);
     }
-    Array.from(files).forEach(previewFile);
   };
 
   // trigges when files are being uploaded
