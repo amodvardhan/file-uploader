@@ -19,9 +19,7 @@ const App = () => {
         onUploadFinish={(filesInArray: Array<File>) => {
           return console.log(filesInArray);
         }}
-        onFileDelete={(remainingFiles: Array<File>) =>
-          console.log(remainingFiles, "file")
-        }
+        onFileDelete={(deletedFie: File) => console.log(deletedFie, "file")}
       />
     </>
   );

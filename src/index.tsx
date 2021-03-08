@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { arrayBufferToBase64, convertToByteArray } from "./common";
 interface IFileUploaerProps {
   /** Drag and Drop information label text  */
   information: string;
@@ -22,13 +21,13 @@ interface IFileUploaerProps {
   removeIconClass: string;
 
   /** Already added files as array of byte[] */
-  existingFiles: Array<ArrayBuffer>;
+  existingFiles: Array<File>;
 
   /** Once all the files are uploaded it update the caller with Array<ArrayBuffer> */
   onUploadFinish: (files: Array<File>) => void;
 
-  /** Triggers when file is removed */
-  onFileDelete: (remainingFiles: Array<File>) => void;
+  /** Triggers when user clicks on delete,  return file which is to be deleted */
+  onFileDelete: (file: File) => void;
 }
 
 /** File uploader with drag and drop events */
@@ -41,7 +40,6 @@ function FileUploader(props: IFileUploaerProps) {
     IconComponent,
     enablePreview,
     enableProgress,
-    removeIconClass,
     existingFiles,
     onFileDelete,
     onUploadFinish,
@@ -54,14 +52,14 @@ function FileUploader(props: IFileUploaerProps) {
   let totalFiles: number = 0;
 
   // states
-  const [filesByteArray, setFilesByteArray] = useState<Array<ArrayBuffer>>([]);
+  // const [filesByteArray, setFilesByteArray] = useState<Array<ArrayBuffer>>([]);
   const [files, setFiles] = useState<Array<File>>([]);
 
   useEffect(() => {
     dropArea = document.getElementById("drop-area");
     progressBar = document.getElementById("progress-bar");
 
-    setFilesByteArray(existingFiles);
+    setFiles(existingFiles);
 
     // wiring events
     wireEvents();
@@ -134,23 +132,15 @@ function FileUploader(props: IFileUploaerProps) {
 
   const handleFiles = (uploadedFiles: Array<File>) => {
     totalFiles = uploadedFiles.length;
-    const newFiles: Array<File> = [...uploadedFiles];
+    const newFiles: Array<File> = [...files, ...uploadedFiles];
 
     if (totalFiles === 0) return;
 
     // if enable progress is set to true then only proceed
-    // enableProgress && initializeProgress(files.length);
-    // for (let index = 0; index <= totalFiles; ++index) {
-    //   enableProgress && updateProgress(index);
-    //   enablePreview && previewFile(files[index]);
-    // }
-
     if (enableProgress) {
       initializeProgress(files.length);
       newFiles.forEach(updateProgress);
     }
-
-    enablePreview && newFiles.forEach(previewFile);
 
     // finish the file upload and update parent component
     onUploadFinish(newFiles);
@@ -187,27 +177,12 @@ function FileUploader(props: IFileUploaerProps) {
     progressBar.value = total;
   };
 
-  // show the uploaded files as a preview
-  const previewFile = (file: File) => {
-    convertToByteArray(file).then((fileInBytes: ArrayBuffer) => {
-      let updatedFiles: Array<ArrayBuffer> = [];
-      setFilesByteArray((prevState: Array<ArrayBuffer>) => {
-        updatedFiles = [...prevState, fileInBytes];
-        return updatedFiles;
-      });
-    });
-  };
-
   // triggers when user click on delete icon
-  const onDelete = (index: number) => {
-    const updatedFiles = filesByteArray.filter(
-      (_, idx: number) => idx !== index
-    );
-    setFilesByteArray(updatedFiles);
-    // delete the file from the file[]
-    files.splice(index, 1);
-    // update the parent component with remaining files
-    onFileDelete(files);
+  const onDelete = (deletedFile: File) => {
+    const updatedFiles = files.filter((file: File) => file !== deletedFile);
+
+    setFiles(updatedFiles);
+    onFileDelete(deletedFile);
   };
 
   return (
@@ -235,22 +210,34 @@ function FileUploader(props: IFileUploaerProps) {
       {enableProgress && (
         <progress id="progress-bar" max="100" value="0"></progress>
       )}
-      {enablePreview && filesByteArray.length > 0 && (
-        <div id="gallery">
-          {filesByteArray.map((file: ArrayBuffer, index: number) => (
-            <div key={`preview_${index}`}>
-              <span
-                className={removeIconClass ? removeIconClass : "close"}
-                onClick={() => onDelete(index)}
-              ></span>
-              <embed
-                src={`data:image/png;base64,${arrayBufferToBase64(file)}`}
-              ></embed>
-            </div>
-          ))}
-        </div>
+      {enablePreview && files.length > 0 && (
+        <Preview files={files} onDelete={onDelete} />
       )}
     </div>
+  );
+}
+
+interface IPreview {
+  files: Array<File>;
+  onDelete: (file: File) => void;
+}
+
+/** Shows the preview of the uploaded files */
+function Preview(props: IPreview) {
+  const { files, onDelete } = props;
+  return (
+    <ul className={styles.previewList}>
+      {files.map((file: File, index: number) => (
+        <li key={file.name + index}>
+          <img
+            className={styles.imagePreview}
+            src={URL.createObjectURL(file)}
+          />
+          <span className={styles.fileName}>{file.name}</span>
+          <span className={styles.close} onClick={() => onDelete(file)}></span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
