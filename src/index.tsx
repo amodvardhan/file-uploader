@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 interface IFileUploaerProps {
+  id: string;
   /** Drag and Drop information label text  */
   information: string;
   /** Allow files types allowed to be uploaded  default is 'images/*' */
@@ -33,6 +34,7 @@ interface IFileUploaerProps {
 /** File uploader with drag and drop events */
 function FileUploader(props: IFileUploaerProps) {
   const {
+    id,
     information,
     fileType,
     multiple,
@@ -56,7 +58,7 @@ function FileUploader(props: IFileUploaerProps) {
   const [files, setFiles] = useState<Array<File>>([]);
 
   useEffect(() => {
-    dropArea = document.getElementById("drop-area");
+    dropArea = document.getElementById(id);
     progressBar = document.getElementById("progress-bar");
 
     setFiles(existingFiles);
@@ -65,14 +67,14 @@ function FileUploader(props: IFileUploaerProps) {
     wireEvents();
     highglightArea(true);
     unhighlightArea(true);
-    dropArea.addEventListener("drop", handleDrop, false);
+    dropArea?.addEventListener("drop", handleDrop, false);
 
     return () => {
       // unwiring events
       unwireEvents();
       highglightArea(false);
       unhighlightArea(false);
-      dropArea.removeEventListener("drop", handleDrop, false);
+      dropArea?.removeEventListener("drop", handleDrop, false);
     };
   }, [dropArea, progressBar]);
 
@@ -186,7 +188,7 @@ function FileUploader(props: IFileUploaerProps) {
   };
 
   return (
-    <div id="drop-area" className={styles.droparea}>
+    <div id={id} className={styles.droparea}>
       <div className={styles.myform}>
         <div>{information}</div>
         <div style={{ textAlign: "center" }}>
@@ -195,13 +197,13 @@ function FileUploader(props: IFileUploaerProps) {
         <div>
           <input
             type="file"
-            id="fileElem"
+            id={`${id}_fileElem`}
             className={styles.fileElem}
             multiple={multiple}
             accept={fileType}
             onChange={onFileChange}
           />
-          <label className={styles.button} htmlFor="fileElem">
+          <label className={styles.button} htmlFor={`${id}_fileElem`}>
             {buttonLabel}
           </label>
         </div>

@@ -7,9 +7,25 @@ const App = () => {
   return (
     <>
       <FileUploader
-        key={Math.random()}
+        id="1"
         information="Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region"
-        fileType="image/*"
+        fileType="image/*, application/pdf"
+        buttonLabel="Select some files"
+        multiple
+        enablePreview
+        removeIconClass=""
+        existingFiles={[]}
+        IconComponent={() => <strong>Icon Placeholer</strong>}
+        onUploadFinish={(filesInArray: Array<File>) => {
+          return console.log(filesInArray);
+        }}
+        onFileDelete={(deletedFie: File) => console.log(deletedFie, "file")}
+      />
+
+      <FileUploader
+        id="2"
+        information="Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region"
+        fileType="image/*, application/pdf"
         buttonLabel="Select some files"
         multiple
         enablePreview
