@@ -1,6 +1,6 @@
 {
   "name": "@amodv/react-file-uploader",
-  "version": "1.0.28blish",
+  "version": "1.0.29",
   "description": "File uploader with drag and drop functionality using HTML 5 and ReactJs",
   "author": "Amod Vardhan",
   "license": "MIT",
