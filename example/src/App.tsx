@@ -9,7 +9,7 @@ const App = () => {
       <FileUploader
         id="1"
         information="Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region"
-        fileType="image/*, application/pdf"
+        fileType="application/pdf"
         buttonLabel="Select some files"
         multiple
         enablePreview
@@ -25,7 +25,7 @@ const App = () => {
       <FileUploader
         id="2"
         information="Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region"
-        fileType="image/*, application/pdf"
+        fileType="application/pdf, image/*"
         buttonLabel="Select some files"
         multiple
         enablePreview

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
+
 interface IFileUploaerProps {
   id: string;
   /** Drag and Drop information label text  */
@@ -145,10 +146,24 @@ function FileUploader(props: IFileUploaerProps) {
     }
 
     // finish the file upload and update parent component
-    onUploadFinish(newFiles);
-    setFiles(newFiles);
+    setValidFiles(newFiles);
   };
 
+  const setValidFiles = (files: Array<File>) => {
+    let validFiles: Array<File> = [];
+    for (const file of files) {
+      debugger;
+      if (fileType.includes("image") && file.type.includes("image")) {
+        validFiles = [...validFiles, file];
+      } else if (file.type && fileType.includes(file.type)) {
+        validFiles = [...validFiles, file];
+      }
+    }
+    if (validFiles.length > 0) {
+      setFiles(validFiles);
+      onUploadFinish(validFiles);
+    }
+  };
   // triggers whenever user upload the files through upload button
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleFiles(Array.from(e.target.files ? e.target.files : []));
@@ -231,10 +246,7 @@ function Preview(props: IPreview) {
     <ul className={styles.previewList}>
       {files.map((file: File, index: number) => (
         <li key={file.name + index}>
-          <img
-            className={styles.imagePreview}
-            src={URL.createObjectURL(file)}
-          />
+          <RenderFile type={file.type} file={file} />
           <span className={styles.fileName}>{file.name}</span>
           <span className={styles.close} onClick={() => onDelete(file)}></span>
         </li>
@@ -243,4 +255,37 @@ function Preview(props: IPreview) {
   );
 }
 
+interface IRenderFile {
+  file: File;
+  type: string;
+}
+
+function RenderFile(props: IRenderFile) {
+  const { file, type } = props;
+  if (type === "application/pdf") {
+    return (
+      <embed
+        className={styles.imagePreview}
+        src={URL.createObjectURL(file)}
+      ></embed>
+    );
+  } else if (type.indexOf("image") > -1) {
+    return (
+      <img className={styles.imagePreview} src={URL.createObjectURL(file)} />
+    );
+  } else if (
+    type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    type === "application/vnd.ms-excel"
+  ) {
+    return (
+      <img
+        src="https://www.logo.wine/a/logo/Microsoft_Excel/Microsoft_Excel-Logo.wine.svg"
+        className={styles.imagePreview}
+      />
+    );
+  }
+
+  return <span className={styles.otherFile}>{file.type}</span>;
+}
 export default FileUploader;

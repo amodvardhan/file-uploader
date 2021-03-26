@@ -80,6 +80,21 @@ p {
   height: 50px;
   vertical-align: middle;
 }
+.otherFile {
+  /* display: flex; */
+  /* padding: 15px; */
+  vertical-align: middle;
+  height: 50px;
+  width: 50px;
+  border: 1px solid #ddd;
+  text-align: center;
+  background-color: #ddd;
+  opacity: 0.5;
+  font-weight: bold;
+  color: blue;
+  line-height: 50px;
+  /* display: flex; */
+}
 
 .fileName {
   text-align: center;
