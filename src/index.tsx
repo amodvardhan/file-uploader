@@ -269,7 +269,7 @@ function RenderFile(props: IRenderFile) {
         src={URL.createObjectURL(file)}
       ></embed>
     );
-  } else if (type.indexOf("image") > -1) {
+  } else if (type?.indexOf("image") > -1) {
     return (
       <img className={styles.imagePreview} src={URL.createObjectURL(file)} />
     );
