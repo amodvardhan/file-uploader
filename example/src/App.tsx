@@ -25,7 +25,7 @@ const App = () => {
       <FileUploader
         id="2"
         information="Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region"
-        fileType="application/pdf, image/*"
+        fileType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
         buttonLabel="Select some files"
         multiple
         enablePreview

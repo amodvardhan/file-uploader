@@ -30,6 +30,8 @@ interface IFileUploaerProps {
 
   /** Triggers when user clicks on delete,  return file which is to be deleted */
   onFileDelete: (file: File) => void;
+
+  onPreviewClick?: (file: File) => void;
 }
 
 /** File uploader with drag and drop events */
@@ -228,7 +230,11 @@ function FileUploader(props: IFileUploaerProps) {
         <progress id="progress-bar" max="100" value="0"></progress>
       )}
       {enablePreview && files.length > 0 && (
-        <Preview files={files} onDelete={onDelete} />
+        <Preview
+          files={files}
+          onDelete={onDelete}
+          onPreviewclick={props.onPreviewClick}
+        />
       )}
     </div>
   );
@@ -237,6 +243,7 @@ function FileUploader(props: IFileUploaerProps) {
 interface IPreview {
   files: Array<File>;
   onDelete: (file: File) => void;
+  onPreviewclick?: (file: File) => void;
 }
 
 /** Shows the preview of the uploaded files */
@@ -247,7 +254,11 @@ function Preview(props: IPreview) {
       {files.map((file: File, index: number) => (
         <li key={file.name + index}>
           <RenderFile type={file.type} file={file} />
-          <span className={styles.fileName}>{file.name}</span>
+          {props.onPreviewclick ? (
+            <a className={styles.fileName}>{file.name}</a>
+          ) : (
+            <span className={styles.fileName}>{file.name}</span>
+          )}
           <span className={styles.close} onClick={() => onDelete(file)}></span>
         </li>
       ))}
