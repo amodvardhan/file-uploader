@@ -20,6 +20,7 @@ const App = () => {
           return console.log(filesInArray);
         }}
         onFileDelete={(deletedFie: File) => console.log(deletedFie, "file")}
+        children={<h5>Preview</h5>}
       />
 
       <FileUploader
@@ -36,6 +37,7 @@ const App = () => {
           return console.log(filesInArray);
         }}
         onFileDelete={(deletedFie: File) => console.log(deletedFie, "file")}
+        children={<h2>Preview</h2>}
       />
     </>
   );
